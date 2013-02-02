@@ -1,0 +1,18 @@
+/* Will be compiled down to a single stylesheet with your sass files */
+
+.graticule {
+  fill:none;
+  stroke: #222;
+  stroke-opacity: .2;
+  stroke-width: 1px;
+}
+
+.country {
+  fill: #666;
+}
+
+.quake {
+  stroke: #fcc;
+  fill: #f66;
+  stroke-width: 1px;
+}
