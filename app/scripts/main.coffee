@@ -18,7 +18,25 @@ svg.append("path")
   .attr("class","graticule")
   .attr("d",path)
 
+svg.append("path")
+  .datum(grat.outline)
+  .attr("class","graticule outline")
+  .attr("d",path)
+
+tooltip = svg.append("g")
+  .attr("class","tooltip")
+
 colorscale = d3.scale.linear().domain([1,7]).range(["#ccc","#c33"])
+
+clearTooltip = ->
+  svg.select(".tooltip").remove()
+
+drawTooltip = (d) ->
+  ex = d3.event.pageX
+  ey = d3.event.pageY
+
+  svg.select(".tooltip")
+    
 
 queue()
   .defer(d3.json,"/scripts/vendor/world-110m.json")
@@ -31,13 +49,19 @@ queue()
       .attr("class","country")
       .attr("d",path)
 
-    coords = ( {pos: projection([parseFloat(d.Lon), parseFloat(d.Lat)]), mag: parseFloat(d.Magnitude)} for d in quakes)
-    console.log coords
+    coords = ( {date: d.Datetime, depth: d.Depth, region: d.Region, pos: projection([parseFloat(d.Lon), parseFloat(d.Lat)]), mag: parseFloat(d.Magnitude)} for d in quakes)
     svg.selectAll(".quake")
       .data(coords)
       .enter().insert("circle",".quake")
       .attr("cx",(d) -> d.pos[0])
       .attr("cy",(d) -> d.pos[1])
+      .attr("r",0)
+      .on("mouseover",drawTooltip)
+      .on("mouseout",clearTooltip)
+      .transition()
+      .duration(1000)
+      .delay((d,i) -> i* 20)
       .attr("r",(d) -> 0.5 + d.mag)
       .style("fill",(d) -> colorscale(d.mag))
+
   )
